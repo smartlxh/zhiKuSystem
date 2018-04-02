@@ -7,8 +7,11 @@ package com.example.smartlxh;
 
 import com.sun.tools.javac.jvm.Items;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Null;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -63,7 +66,7 @@ public class GreetingController {
     }
 
 
-    @RequestMapping(path = "login",method=RequestMethod.POST)
+    @RequestMapping(path = "insert",method=RequestMethod.POST)
     public ResultJson insertInfoByPost(@RequestBody Scholar scholar) {
 
         dataPersitence p = new dataPersitence();
@@ -111,7 +114,46 @@ public class GreetingController {
 
     }
 
-    
+
+    @RequestMapping(path = "upload")
+    @ResponseBody
+    public ResultJson insertInfoByGet(MultipartFile file) {
+        String gen = "/Users/lixianhai/Desktop";
+        String filename = gen + File.separator+"文件ID"+File.separator + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        System.out.println("");
+        File saveFile = new File(filename);
+        try {
+            if (!saveFile.getParentFile().exists() || !saveFile.getParentFile().isDirectory()) {
+                saveFile.getParentFile().mkdirs();
+            }
+            if (saveFile != null && !saveFile.exists()) {
+                saveFile.createNewFile();
+            }
+            file.transferTo(saveFile);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //添加上传地址
+//        scholar.setFilePath(filename);
+        //dataPersitence p = new dataPersitence();
+        //ReturnCodeEnum returncode = p.insertScholar(scholar);
+        return new ResultJson(ReturnCodeEnum.SUCCESS.getCode(),null);
+
+    }
+
+
+    @RequestMapping("/queryByFuzzle")
+    public FuzzleQueryJson queryByFuzzle(@RequestParam(value="query") String query) {
+
+
+        dataPersitence p = new dataPersitence();
+        LinkedList<Work> list = p.queryByFuzzle(query);
+        return new FuzzleQueryJson(ReturnCodeEnum.SUCCESS.getCode(),list);
+
+
+    }
 
     @RequestMapping("/*")
     public ResultJson getError(){

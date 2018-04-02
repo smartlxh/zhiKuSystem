@@ -8,10 +8,10 @@ import java.util.List;
  */
 public class dataPersitence {
 
-    public static final String url = "jdbc:mysql://127.0.0.1/douban?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
+    public static final String url = "jdbc:mysql://127.0.0.1/graduteDesign?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
     public static final String name = "com.mysql.jdbc.Driver";
     public static final String user = "root";
-    public static final String password = "123";
+    public static final String password = "32784744li";
 
     public dataPersitence(){
 //        try {
@@ -198,6 +198,46 @@ public class dataPersitence {
 
     }
 
+
+
+    public LinkedList<Work>  queryByFuzzle(String query){
+
+        LinkedList<Work> works = new LinkedList<Work>();
+
+        try{
+
+
+            Connection conn = getConnection();
+            Statement state= conn.createStatement();
+            String sql = "select * from works where name like \"%%%s%%\" or time like \"%%%s%%\" or type like \"%%%s%%\" or research_area like \"%%%s%%\" or award like \"%%%s%%\"";
+
+            sql = String.format(sql,query,query,query,query,query);
+
+
+            System.out.println(sql);
+            ResultSet result = state.executeQuery(sql);
+            Work work = new Work();
+            while(result.next()){
+                System.out.println("dd");
+                work.setId(result.getInt(1));
+                work.setName(result.getString(2));
+                work.setTime(result.getString(3));
+                work.setType(result.getString(4));
+                work.setResearchArea(result.getString(5));
+                work.setAward(result.getString(6));
+                work.setFilePath(result.getString(7));
+                works.add(work);
+            }
+
+        }catch (Exception e){
+
+            e.printStackTrace();
+        }
+        finally {
+            return works;
+        }
+
+    }
 
 }
 
